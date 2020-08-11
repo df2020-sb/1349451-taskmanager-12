@@ -1,11 +1,14 @@
-import {createTopMenuTemplate} from './view/top-menu';
-import {createFiltersTemplate} from './view/filter';
-import {createBoardTemplate} from './view/board';
-import {createTaskEditTemplate} from './view/task-edit';
-import {createTaskTemplate} from './view/task';
-import {createTask} from './mock/task';
+import TopMenu from './view/top-menu';
+import LoadMoreButton from './view/button';
+import Board from './view/board';
+import Filter from './view/filter';
+import Sort from './view/sort';
+import Task from './view/task';
+import TaskList from './view/task-list';
+import TaskEdit from './view/task-edit';
 import {createFilters} from './mock/filter';
-import {createLoadMoreButtonTemplate} from './view/button';
+import {createTask} from './mock/task';
+import {RenderPosition, render} from './utils';
 
 const TASK_COUNT = 30;
 const TASKS_PER_LOAD = 8;
@@ -13,43 +16,63 @@ const TASKS_PER_LOAD = 8;
 const tasks = new Array(TASK_COUNT).fill().map(createTask);
 const filters = createFilters(tasks);
 
-const render = (container, template, position) => {
-  container.insertAdjacentHTML(position, template);
+const main = document.querySelector(`.main`);
+const topMenuContainer = main.querySelector(`.main__control`);
+
+const renderTask = (taskListElement, task) => {
+  const taskComponent = new Task(task);
+  const taskEditComponent = new TaskEdit(task);
+
+  const replaceCardToForm = () => {
+    taskListElement.replaceChild(taskEditComponent.getElement(), taskComponent.getElement());
+  };
+
+  const replaceFormToCard = () => {
+    taskListElement.replaceChild(taskComponent.getElement(), taskEditComponent.getElement());
+  };
+
+  taskComponent.getElement().querySelector(`.card__btn--edit`).addEventListener(`click`, () => {
+    replaceCardToForm();
+  });
+
+  taskEditComponent.getElement().querySelector(`form`).addEventListener(`submit`, (evt) => {
+    evt.preventDefault();
+    replaceFormToCard();
+  });
+
+  render(taskListElement, taskComponent.getElement(), RenderPosition.BEFOREEND);
 };
 
-const mainElement = document.querySelector(`.main`);
-const topMenuElement = mainElement.querySelector(`.main__control`);
+render(topMenuContainer, new TopMenu().getElement(), RenderPosition.BEFOREEND);
+render(main, new Filter(filters).getElement(), RenderPosition.BEFOREEND);
 
-render(topMenuElement, createTopMenuTemplate(), `beforeend`);
-render(mainElement, createFiltersTemplate(filters), `beforeend`);
-render(mainElement, createBoardTemplate(), `beforeend`);
+const boardComponent = new Board();
+render(main, boardComponent.getElement(), RenderPosition.BEFOREEND);
+render(boardComponent.getElement(), new Sort().getElement(), RenderPosition.AFTERBEGIN);
 
-const boardElement = mainElement.querySelector(`.board`);
-const taskListElement = boardElement.querySelector(`.board__tasks`);
-
-render(taskListElement, createTaskEditTemplate(tasks[0]), `beforeend`);
+const taskListComponent = new TaskList();
+render(boardComponent.getElement(), taskListComponent.getElement(), RenderPosition.BEFOREEND);
 
 for (let i = 0; i < Math.min(tasks.length, TASKS_PER_LOAD); i++) {
-  render(taskListElement, createTaskTemplate(tasks[i]), `beforeend`);
+  renderTask(taskListComponent.getElement(), tasks[i]);
 }
 
 if (tasks.length > TASKS_PER_LOAD) {
   let loadedTasks = TASKS_PER_LOAD;
 
-  render(boardElement, createLoadMoreButtonTemplate(), `beforeend`);
-
-  const loadMoreButton = document.querySelector(`.load-more`);
-
-  loadMoreButton.addEventListener(`click`, (evt) => {
+  const loadMoreButton = new LoadMoreButton();
+  render(boardComponent.getElement(), loadMoreButton.getElement(), RenderPosition.BEFOREEND);
+  loadMoreButton.getElement().addEventListener(`click`, (evt) => {
     evt.preventDefault();
     tasks
       .slice(loadedTasks, loadedTasks + TASKS_PER_LOAD)
-      .forEach((task) => render(taskListElement, createTaskTemplate(task), `beforeend`));
+      .forEach((task) => renderTask(taskListComponent.getElement(), task));
 
     loadedTasks += TASKS_PER_LOAD;
 
     if (loadedTasks >= tasks.length) {
-      loadMoreButton.remove();
+      loadMoreButton.getElement().remove();
+      loadMoreButton.removeElement();
     }
   });
 }
