@@ -22,6 +22,7 @@ export default class Board {
   }
 
   removeElement() {
+    this.getElement().remove();
     this._element = null;
   }
 }

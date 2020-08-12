@@ -71,7 +71,7 @@ if (tasks.length > TASKS_PER_LOAD) {
     loadedTasks += TASKS_PER_LOAD;
 
     if (loadedTasks >= tasks.length) {
-      loadMoreButton.getElement().remove();
+      // loadMoreButton.getElement().remove();
       loadMoreButton.removeElement();
     }
   });
