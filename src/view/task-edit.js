@@ -1,5 +1,22 @@
 import {COLORS} from '../const.js';
-import {isTaskExpired, isTaskRepeating, formatDueDate} from '../utils.js';
+import {isTaskExpired, isTaskRepeating, formatDueDate, createElement} from '../utils.js';
+
+const EMPTY_TASK = {
+  color: COLORS[0],
+  description: ``,
+  dueDate: null,
+  repeating: {
+    mo: false,
+    tu: false,
+    we: false,
+    th: false,
+    fr: false,
+    sa: false,
+    su: false
+  },
+  isArchive: false,
+  isFavorite: false
+};
 
 const createDueDateTemplate = (dueDate) => {
   return `<button class="card__date-deadline-toggle" type="button">
@@ -56,22 +73,8 @@ const createColorsTemplate = (currentColor) => {
   >`).join(``);
 };
 
-export const createTaskEditTemplate = (task = {}) => {
-  const {
-    color = `black`,
-    description = ``,
-    dueDate = null,
-    repeating = {
-      mo: false,
-      tu: false,
-      we: false,
-      th: false,
-      fr: false,
-      sa: false,
-      su: false
-    }
-  } = task;
-
+const createTaskEditTemplate = (task = {}) => {
+  const {color, description, dueDate, repeating} = task;
 
   const deadlineClassName = isTaskExpired(dueDate)
     ? `card--deadline`
@@ -126,3 +129,27 @@ export const createTaskEditTemplate = (task = {}) => {
     </article>`
   );
 };
+
+export default class TaskEdit {
+  constructor(task = EMPTY_TASK) {
+    this._task = task;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createTaskEditTemplate(this._task);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element.remove();
+    this._element = null;
+  }
+}
