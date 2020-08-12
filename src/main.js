@@ -2,6 +2,7 @@ import TopMenu from './view/top-menu';
 import LoadMoreButton from './view/button';
 import Board from './view/board';
 import Filter from './view/filter';
+import NoTask from './view/no-task';
 import Sort from './view/sort';
 import Task from './view/task';
 import TaskList from './view/task-list';
@@ -31,49 +32,67 @@ const renderTask = (taskListElement, task) => {
     taskListElement.replaceChild(taskComponent.getElement(), taskEditComponent.getElement());
   };
 
+  const onEscKeyDown = (evt) => {
+    if (evt.key === `Escape` || evt.key === `Esc`) {
+      evt.preventDefault();
+      replaceFormToCard();
+      document.removeEventListener(`keydown`, onEscKeyDown);
+    }
+  };
+
   taskComponent.getElement().querySelector(`.card__btn--edit`).addEventListener(`click`, () => {
     replaceCardToForm();
+    document.addEventListener(`keydown`, onEscKeyDown);
   });
 
   taskEditComponent.getElement().querySelector(`form`).addEventListener(`submit`, (evt) => {
     evt.preventDefault();
     replaceFormToCard();
+    document.removeEventListener(`keydown`, onEscKeyDown);
   });
 
   render(taskListElement, taskComponent.getElement(), RenderPosition.BEFOREEND);
 };
 
+const renderBoard = (container, items) => {
+
+  const boardComponent = new Board();
+  render(container, boardComponent.getElement(), RenderPosition.BEFOREEND);
+
+  const taskListComponent = new TaskList();
+  render(boardComponent.getElement(), taskListComponent.getElement(), RenderPosition.BEFOREEND);
+
+  if (items.every((item) => item.isArchive)) {
+    render(boardComponent.getElement(), new NoTask().getElement(), RenderPosition.AFTERBEGIN);
+    return;
+  }
+
+  render(boardComponent.getElement(), new Sort().getElement(), RenderPosition.AFTERBEGIN);
+
+  items
+    .slice(0, Math.min(tasks.length, TASKS_PER_LOAD))
+    .forEach((item) => renderTask(taskListComponent.getElement(), item));
+
+  if (tasks.length > TASKS_PER_LOAD) {
+    let loadedTasks = TASKS_PER_LOAD;
+
+    const loadMoreButton = new LoadMoreButton();
+    render(boardComponent.getElement(), loadMoreButton.getElement(), RenderPosition.BEFOREEND);
+    loadMoreButton.getElement().addEventListener(`click`, (evt) => {
+      evt.preventDefault();
+      tasks
+        .slice(loadedTasks, loadedTasks + TASKS_PER_LOAD)
+        .forEach((task) => renderTask(taskListComponent.getElement(), task));
+
+      loadedTasks += TASKS_PER_LOAD;
+
+      if (loadedTasks >= tasks.length) {
+        loadMoreButton.removeElement();
+      }
+    });
+  }
+};
+
 render(topMenuContainer, new TopMenu().getElement(), RenderPosition.BEFOREEND);
 render(main, new Filter(filters).getElement(), RenderPosition.BEFOREEND);
-
-const boardComponent = new Board();
-render(main, boardComponent.getElement(), RenderPosition.BEFOREEND);
-render(boardComponent.getElement(), new Sort().getElement(), RenderPosition.AFTERBEGIN);
-
-const taskListComponent = new TaskList();
-render(boardComponent.getElement(), taskListComponent.getElement(), RenderPosition.BEFOREEND);
-
-for (let i = 0; i < Math.min(tasks.length, TASKS_PER_LOAD); i++) {
-  renderTask(taskListComponent.getElement(), tasks[i]);
-}
-
-if (tasks.length > TASKS_PER_LOAD) {
-  let loadedTasks = TASKS_PER_LOAD;
-
-  const loadMoreButton = new LoadMoreButton();
-  render(boardComponent.getElement(), loadMoreButton.getElement(), RenderPosition.BEFOREEND);
-  loadMoreButton.getElement().addEventListener(`click`, (evt) => {
-    evt.preventDefault();
-    tasks
-      .slice(loadedTasks, loadedTasks + TASKS_PER_LOAD)
-      .forEach((task) => renderTask(taskListComponent.getElement(), task));
-
-    loadedTasks += TASKS_PER_LOAD;
-
-    if (loadedTasks >= tasks.length) {
-      // loadMoreButton.getElement().remove();
-      loadMoreButton.removeElement();
-    }
-  });
-}
-
+renderBoard(main, tasks);
