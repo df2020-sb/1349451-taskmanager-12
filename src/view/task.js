@@ -86,7 +86,7 @@ export default class Task {
   }
 
   removeElement() {
-    this.getElement().remove();
+    this._element.remove();
     this._element = null;
 
   }
