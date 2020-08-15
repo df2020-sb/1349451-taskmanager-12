@@ -1,5 +1,6 @@
 import AbstractView from "./view/abstract";
 
+// common
 export const getRandomInteger = (a, b) => {
   const min = Math.ceil(Math.min(a, b));
   const max = Math.floor(Math.max(a, b));
@@ -11,6 +12,7 @@ export const getRandomArrayElement = (array) => {
   return array[randomIndex];
 };
 
+// dates
 const getCurrentDate = () => {
   const currentDate = new Date();
   currentDate.setHours(23, 59, 59, 999);
@@ -45,6 +47,44 @@ export const RenderPosition = {
   AFTERBEGIN: `afterbegin`,
   BEFOREEND: `beforeend`
 };
+
+const compareNullDates = (dateA, dateB) => {
+  if (dateA === null && dateB === null) {
+    return 0;
+  }
+
+  if (dateA === null) {
+    return 1;
+  }
+
+  if (dateB === null) {
+    return -1;
+  }
+
+  return null;
+};
+
+
+export const sortTaskUp = (taskA, taskB) => {
+  let compareResult = compareNullDates(taskA.dueDate, taskB.dueDate);
+
+  if (compareResult !== null) {
+    return compareResult;
+  }
+  return taskA.dueDate.getTime() - taskB.dueDate.getTime();
+};
+
+export const sortTaskDown = (taskA, taskB) => {
+  const compareResult = compareNullDates(taskA.dueDate, taskB.dueDate);
+
+  if (compareResult !== null) {
+    return compareResult;
+  }
+  return taskB.dueDate.getTime() - taskA.dueDate.getTime();
+};
+
+
+// render
 
 export const render = (container, element, position) => {
 
@@ -100,3 +140,4 @@ export const remove = (element) => {
   }
   element.removeElement();
 };
+
