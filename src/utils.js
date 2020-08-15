@@ -1,3 +1,4 @@
+import AbstractView from "./view/abstract";
 
 export const getRandomInteger = (a, b) => {
   const min = Math.ceil(Math.min(a, b));
@@ -46,6 +47,15 @@ export const RenderPosition = {
 };
 
 export const render = (container, element, position) => {
+
+  if (container instanceof AbstractView) {
+    container = container.getElement();
+  }
+
+  if (element instanceof AbstractView) {
+    element = element.getElement();
+  }
+
   switch (position) {
     case RenderPosition.AFTERBEGIN:
       container.prepend(element);
@@ -65,4 +75,28 @@ export const createElement = (template) => {
   newElement.innerHTML = template;
 
   return newElement.firstChild;
+};
+
+export const replace = (newElement, oldElement) => {
+  if (oldElement instanceof AbstractView) {
+    oldElement = oldElement.getElement();
+  }
+
+  if (newElement instanceof AbstractView) {
+    newElement = newElement.getElement();
+  }
+
+  const parent = oldElement.parentElement;
+
+  if (parent === null || oldElement === null || newElement === null) {
+    throw new Error(`Can't replace unexisting elements`);
+  }
+  parent.replaceChild(newElement, oldElement);
+};
+
+export const remove = (element) => {
+  if (!(element instanceof AbstractView)) {
+    throw new Error(`Can remove only components`);
+  }
+  element.removeElement();
 };
