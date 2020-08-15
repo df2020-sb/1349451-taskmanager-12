@@ -1,4 +1,4 @@
-import {createElement} from '../utils';
+import AbstractView from "./abstract";
 
 const createTopMenuTemplate = () => {
   return (
@@ -33,25 +33,8 @@ const createTopMenuTemplate = () => {
   );
 };
 
-export default class TopMenu {
-  constructor() {
-    this._element = null;
-  }
-
+export default class TopMenu extends AbstractView {
   _getTemplate() {
     return createTopMenuTemplate();
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this._getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element.remove();
-    this._element = null;
   }
 }
