@@ -59,17 +59,16 @@ export default class BoardPresenter {
       }
     };
 
-    const removeEsc = () => {
+    const removeEscListener = () => {
       document.removeEventListener(`keydown`, onEscKeyDown);
     };
 
-    taskComponent.setRemoveEvtHandler(removeEsc);
+    taskComponent.setRemoveEvtHandler(removeEscListener);
 
     taskComponent.setEditClickHandler(() => {
       replaceCardToForm();
       document.addEventListener(`keydown`, onEscKeyDown);
     });
-
 
     taskEditComponent.setSubmitHandler(() => {
       replaceFormToCard();
@@ -84,7 +83,6 @@ export default class BoardPresenter {
     this._tasks
       .slice(from, to)
       .forEach((task) => this._renderTask(task));
-
   }
 
   _renderNoTasks() {
