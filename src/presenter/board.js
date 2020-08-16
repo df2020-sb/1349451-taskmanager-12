@@ -27,6 +27,7 @@ export default class BoardPresenter {
 
     this._handleButtonClick = this._handleButtonClick.bind(this);
     this._handleSortTypeChange = this._handleSortTypeChange.bind(this);
+    this._renderedTasks = [];
   }
 
   _renderBoardContainer() {
@@ -58,16 +59,24 @@ export default class BoardPresenter {
       }
     };
 
+    const removeEsc = () => {
+      document.removeEventListener(`keydown`, onEscKeyDown);
+    };
+
+    taskComponent.setRemoveEvtHandler(removeEsc);
+
     taskComponent.setEditClickHandler(() => {
       replaceCardToForm();
       document.addEventListener(`keydown`, onEscKeyDown);
     });
+
 
     taskEditComponent.setSubmitHandler(() => {
       replaceFormToCard();
       document.removeEventListener(`keydown`, onEscKeyDown);
     });
 
+    this._renderedTasks.push(taskComponent);
     render(this._taskListComponent, taskComponent, RenderPosition.BEFOREEND);
   }
 
@@ -75,6 +84,7 @@ export default class BoardPresenter {
     this._tasks
       .slice(from, to)
       .forEach((task) => this._renderTask(task));
+
   }
 
   _renderNoTasks() {
@@ -107,6 +117,10 @@ export default class BoardPresenter {
         this._tasks = [...this._receivedTasks];
     }
     this._currenSortType = sortType;
+
+    this._renderedTasks.forEach((task) => {
+      task.removeEvtHandler();
+    });
 
     this._taskListComponent.getElement().innerHTML = ``;
     this._loadedTasksCount = TASKS_PER_LOAD;
