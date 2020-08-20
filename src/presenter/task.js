@@ -21,9 +21,36 @@ export default class TaskPresenter {
     this._handleArchiveClick = this._handleArchiveClick.bind(this);
     this._handleFormSubmit = this._handleFormSubmit.bind(this);
     this._escKeyDownHandler = this._escKeyDownHandler.bind(this);
-    this._callback = {};
   }
 
+  init(task) {
+    this._task = task;
+    const prevTaskComponent = this._taskComponent;
+    const prevTaskEditComponent = this._taskEditComponent;
+
+    this._taskComponent = new TaskView(task);
+    this._taskEditComponent = new TaskEditView(task);
+    this._taskEditComponent.setSubmitHandler(this._handleFormSubmit);
+    this._taskComponent.setEditClickHandler(this._handleEditClick);
+    this._taskComponent.setFavoriteClickHandler(this._handleFavoriteClick);
+    this._taskComponent.setArchiveClickHandler(this._handleArchiveClick);
+
+    if (prevTaskComponent === null || prevTaskEditComponent === null) {
+      render(this._container, this._taskComponent, RenderPosition.BEFOREEND);
+      return;
+    }
+
+    if (this._mode === Mode.DEFAULT) {
+      replace(this._taskComponent, prevTaskComponent);
+    }
+
+    if (this._mode === Mode.EDITING) {
+      replace(this._taskEditComponent, prevTaskEditComponent);
+    }
+
+    remove(prevTaskComponent);
+    remove(prevTaskEditComponent);
+  }
   _replaceCardToForm() {
     replace(this._taskEditComponent, this._taskComponent);
     document.addEventListener(`keydown`, this._escKeyDownHandler);
@@ -75,32 +102,5 @@ export default class TaskPresenter {
     }
   }
 
-  init(task) {
-    this._task = task;
-    const prevTaskComponent = this._taskComponent;
-    const prevTaskEditComponent = this._taskEditComponent;
 
-    this._taskComponent = new TaskView(task);
-    this._taskEditComponent = new TaskEditView(task);
-    this._taskEditComponent.setSubmitHandler(this._handleFormSubmit);
-    this._taskComponent.setEditClickHandler(this._handleEditClick);
-    this._taskComponent.setFavoriteClickHandler(this._handleFavoriteClick);
-    this._taskComponent.setArchiveClickHandler(this._handleArchiveClick);
-
-    if (prevTaskComponent === null || prevTaskEditComponent === null) {
-      render(this._container, this._taskComponent, RenderPosition.BEFOREEND);
-      return;
-    }
-
-    if (this._mode === Mode.DEFAULT) {
-      replace(this._taskComponent, prevTaskComponent);
-    }
-
-    if (this._mode === Mode.EDITING) {
-      replace(this._taskEditComponent, prevTaskEditComponent);
-    }
-
-    remove(prevTaskComponent);
-    remove(prevTaskEditComponent);
-  }
 }

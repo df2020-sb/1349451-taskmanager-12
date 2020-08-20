@@ -96,6 +96,7 @@ export default class BoardPresenter {
     }
     this._currenSortType = sortType;
 
+    // this._taskListComponent.getElement().innerHTML = ``;
     this._clearTaskList();
     this._renderTaskList();
   }
@@ -119,7 +120,6 @@ export default class BoardPresenter {
     this._taskPresenter = {};
     this._loadedTasksCount = TASKS_PER_LOAD;
   }
-
   init() {
     this._renderBoardContainer();
 
