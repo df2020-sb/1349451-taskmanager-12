@@ -1,6 +1,9 @@
+/* eslint-disable indent */
 import {COLORS} from '../const.js';
-import {isTaskExpired, isTaskRepeating, formatDueDate} from '../utils.js';
+import {isTaskRepeating, formatDueDate} from '../utils.js';
 import SmartView from "./smart.js";
+import flatpickr from "flatpickr";
+import "../../node_modules/flatpickr/dist/flatpickr.min.css";
 
 const EMPTY_TASK = {
   color: COLORS[0],
@@ -79,10 +82,6 @@ const createColorsTemplate = (currentColor) => {
 const createTaskEditTemplate = (data) => {
   const {color, description, dueDate, repeating, isDueDate, isRepeating} = data;
 
-  const deadlineClassName = isTaskExpired(dueDate)
-    ? `card--deadline`
-    : ``;
-
   const repeatClassName = isRepeating
     ? `card--repeat`
     : ``;
@@ -90,10 +89,10 @@ const createTaskEditTemplate = (data) => {
   const dueDateTemplate = createDueDateTemplate(dueDate, isDueDate);
   const repeatTemplate = createRepeatingTemplate(repeating, isRepeating);
   const colorsTemplate = createColorsTemplate(color);
-  const isSubmitDisabled = isRepeating && !isTaskRepeating(repeating);
+  const isSubmitDisabled = isDueDate && dueDate === null || isRepeating && !isTaskRepeating(repeating);
 
   return (
-    `<article class="card card--edit card--${color} ${deadlineClassName} ${repeatClassName}">
+    `<article class="card card--edit card--${color} ${repeatClassName}">
       <form class="card__form" method="get">
         <div class="card__inner">
           <div class="card__color-bar">
@@ -140,12 +139,15 @@ export default class TaskEdit extends SmartView {
     this._data = TaskEdit.parseTaskToData(task);
     this._submitHandler = this._submitHandler.bind(this);
     this._dueDateToggleHandler = this._dueDateToggleHandler.bind(this);
+    this._dueDateChangeHandler = this._dueDateChangeHandler.bind(this);
     this._repeatingToggleHandler = this._repeatingToggleHandler.bind(this);
     this._descriptionInputHandler = this._descriptionInputHandler.bind(this);
     this._repeatingChangeHandler = this._repeatingChangeHandler.bind(this);
     this._colorChangeHandler = this._colorChangeHandler.bind(this);
+    this._datepicker = null;
 
     this._setInnerHandlers();
+    this._setDatepicker();
   }
 
   _getTemplate() {
@@ -186,6 +188,26 @@ export default class TaskEdit extends SmartView {
       isDueDate: !this._data.isDueDate,
       isRepeating: !this._data.isDueDate && false
     });
+  }
+
+  _dueDateChangeHandler(selectedDates) {
+    this.updateData({
+      dueDate: selectedDates[0]
+    });
+  }
+
+  _setDatepicker() {
+    if (this._datepicker) {
+      this._datepicker.destroy();
+      this._datepicker = null;
+    }
+
+    if (this._data.isDueDate) {
+      this._datepicker = flatpickr(this.getElement()
+        .querySelector(`.card__date`),
+        {dateFormat: `j F`, defaultDate: this._data.dueDate, onChange: this._dueDateChangeHandler}
+      );
+    }
   }
 
   _repeatingToggleHandler(evt) {
@@ -249,6 +271,7 @@ export default class TaskEdit extends SmartView {
 
   restoreHandlers() {
     this._setInnerHandlers();
+    this._setDatepicker();
     this.setSubmitHandler(this._callback.submit);
   }
 

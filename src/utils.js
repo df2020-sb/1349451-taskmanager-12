@@ -1,4 +1,5 @@
 import AbstractView from "./view/abstract";
+import moment from "moment";
 
 // common
 export const getRandomInteger = (a, b) => {
@@ -40,7 +41,10 @@ export const isTaskRepeating = (repeating) => {
 };
 
 export const formatDueDate = (dueDate) => {
-  return dueDate.toLocaleString(`en-US`, {day: `numeric`, month: `long`});
+  if (!(dueDate instanceof Date)) {
+    return ``;
+  }
+  return moment(dueDate).format(`D MMMM`);
 };
 
 export const RenderPosition = {
