@@ -95,8 +95,6 @@ export default class BoardPresenter {
         this._tasks = [...this._receivedTasks];
     }
     this._currenSortType = sortType;
-
-    // this._taskListComponent.getElement().innerHTML = ``;
     this._clearTaskList();
     this._renderTaskList();
   }
