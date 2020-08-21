@@ -91,6 +91,10 @@ export default class TaskPresenter {
     this._replaceFormToCard();
   }
 
+  destroyPicker() {
+    this._taskEditComponent.destroyPicker();
+  }
+
   destroy() {
     remove(this._taskComponent);
     remove(this._taskEditComponent);

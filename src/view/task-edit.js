@@ -197,10 +197,7 @@ export default class TaskEdit extends SmartView {
   }
 
   _setDatepicker() {
-    if (this._datepicker) {
-      this._datepicker.destroy();
-      this._datepicker = null;
-    }
+    this.destroyPicker();
 
     if (this._data.isDueDate) {
       this._datepicker = flatpickr(this.getElement()
@@ -267,6 +264,13 @@ export default class TaskEdit extends SmartView {
     delete data.isRepeating;
 
     return data;
+  }
+
+  destroyPicker() {
+    if (this._datepicker) {
+      this._datepicker.destroy();
+      this._datepicker = null;
+    }
   }
 
   restoreHandlers() {
