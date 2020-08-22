@@ -113,6 +113,7 @@ export default class BoardPresenter {
 
   _clearTaskList() {
     Object.values(this._taskPresenter).forEach((presenter) => {
+      presenter.destroyPicker();
       presenter.destroy();
     });
     this._taskPresenter = {};
