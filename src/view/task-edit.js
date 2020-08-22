@@ -178,6 +178,7 @@ export default class TaskEdit extends SmartView {
 
   _submitHandler(evt) {
     evt.preventDefault();
+    this.destroyPicker();
     this._callback.submit(this._data);
   }
 
