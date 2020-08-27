@@ -1,9 +1,10 @@
 /* eslint-disable indent */
 import {COLORS} from '../const.js';
-import {isTaskRepeating, formatDueDate} from '../utils.js';
+import {isTaskRepeating, formatDueDate} from '../utils/date';
 import SmartView from "./smart.js";
 import flatpickr from "flatpickr";
 import "../../node_modules/flatpickr/dist/flatpickr.min.css";
+import he from "he";
 
 const EMPTY_TASK = {
   color: COLORS[0],
@@ -106,7 +107,7 @@ const createTaskEditTemplate = (data) => {
                 class="card__text"
                 placeholder="Start typing your text here..."
                 name="text"
-              >${description}.</textarea>
+              >${he.encode(description)}</textarea>
             </label>
           </div>
           <div class="card__settings">
@@ -137,6 +138,9 @@ export default class TaskEdit extends SmartView {
   constructor(task = EMPTY_TASK) {
     super();
     this._data = TaskEdit.parseTaskToData(task);
+    this._datepicker = null;
+
+    this._formDeleteClickHandler = this._formDeleteClickHandler.bind(this);
     this._submitHandler = this._submitHandler.bind(this);
     this._dueDateToggleHandler = this._dueDateToggleHandler.bind(this);
     this._dueDateChangeHandler = this._dueDateChangeHandler.bind(this);
@@ -144,7 +148,7 @@ export default class TaskEdit extends SmartView {
     this._descriptionInputHandler = this._descriptionInputHandler.bind(this);
     this._repeatingChangeHandler = this._repeatingChangeHandler.bind(this);
     this._colorChangeHandler = this._colorChangeHandler.bind(this);
-    this._datepicker = null;
+
 
     this._setInnerHandlers();
     this._setDatepicker();
@@ -237,6 +241,17 @@ export default class TaskEdit extends SmartView {
     });
   }
 
+  _formDeleteClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.deleteClick(TaskEdit.parseDataToTask(this._data));
+  }
+
+  setDeleteClickHandler(callback) {
+    this._callback.deleteClick = callback;
+    this.getElement().querySelector(`.card__delete`).addEventListener(`click`, this._formDeleteClickHandler);
+  }
+
+
   static parseTaskToData(task) {
     return Object.assign({}, task, {isDueDate: task.dueDate !== null, isRepeating: isTaskRepeating(task.repeating)}
     );
@@ -274,10 +289,16 @@ export default class TaskEdit extends SmartView {
     }
   }
 
+  removeElement() {
+    super.removeElement();
+    this.destroyPicker();
+  }
+
   restoreHandlers() {
     this._setInnerHandlers();
     this._setDatepicker();
     this.setSubmitHandler(this._callback.submit);
+    this.setDeleteClickHandler(this._callback.deleteClick);
   }
 
   reset(task) {
