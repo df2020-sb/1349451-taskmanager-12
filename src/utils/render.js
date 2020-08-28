@@ -1,51 +1,4 @@
-import AbstractView from "./view/abstract";
-import moment from "moment";
-
-// common
-export const getRandomInteger = (a, b) => {
-  const min = Math.ceil(Math.min(a, b));
-  const max = Math.floor(Math.max(a, b));
-  return Math.floor(min + Math.random() * (max - min + 1));
-};
-
-export const getRandomArrayElement = (array) => {
-  const randomIndex = getRandomInteger(0, array.length - 1);
-  return array[randomIndex];
-};
-
-// dates
-const getCurrentDate = () => {
-  const currentDate = new Date();
-  currentDate.setHours(23, 59, 59, 999);
-  return new Date(currentDate);
-};
-
-export const isTaskExpired = (dueDate) => {
-  if (dueDate === null) {
-    return false;
-  }
-  const currentDate = getCurrentDate();
-  return currentDate.getTime() > dueDate.getTime();
-};
-
-export const isTaskExpiringToday = (dueDate) => {
-  if (dueDate === null) {
-    return false;
-  }
-  const currentDate = getCurrentDate();
-  return currentDate.getTime() === dueDate.getTime();
-};
-
-export const isTaskRepeating = (repeating) => {
-  return Object.values(repeating).some(Boolean);
-};
-
-export const formatDueDate = (dueDate) => {
-  if (!(dueDate instanceof Date)) {
-    return ``;
-  }
-  return moment(dueDate).format(`D MMMM`);
-};
+import AbstractView from "../view/abstract";
 
 export const RenderPosition = {
   AFTERBEGIN: `afterbegin`,
@@ -87,8 +40,6 @@ export const sortTaskDown = (taskA, taskB) => {
   return taskB.dueDate.getTime() - taskA.dueDate.getTime();
 };
 
-
-// render
 
 export const render = (container, element, position) => {
 
@@ -139,20 +90,14 @@ export const replace = (newElement, oldElement) => {
 };
 
 export const remove = (element) => {
+
+  if (element === null) {
+    return;
+  }
+
   if (!(element instanceof AbstractView)) {
     throw new Error(`Can remove only components`);
   }
   element.getElement().remove();
   element.removeElement();
-};
-
-export const updateArrayItem = (array, update) => {
-  const index = array.findIndex((item) => item.id === update.id);
-
-  if (index === -1) {
-    return array;
-  }
-
-  return [...array.slice(0, index), update, ...array.slice(index + 1)
-  ];
 };
