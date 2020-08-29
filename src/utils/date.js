@@ -34,5 +34,5 @@ export const formatDueDate = (dueDate) => {
 };
 
 export const isDatesEqual = (dateA, dateB) => {
-  return moment(dateA).isSame(dateB);
+  return moment(dateA).isSame(dateB, `day`);
 };
