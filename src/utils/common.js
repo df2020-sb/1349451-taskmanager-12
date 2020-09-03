@@ -8,14 +8,3 @@ export const getRandomArrayElement = (array) => {
   const randomIndex = getRandomInteger(0, array.length - 1);
   return array[randomIndex];
 };
-
-// export const updateArrayItem = (array, update) => {
-//   const index = array.findIndex((item) => item.id === update.id);
-
-//   if (index === -1) {
-//     return array;
-//   }
-
-//   return [...array.slice(0, index), update, ...array.slice(index + 1)
-//   ];
-// };

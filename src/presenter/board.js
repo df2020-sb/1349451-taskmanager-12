@@ -8,22 +8,27 @@ import {RenderPosition, render, remove, sortTaskDown, sortTaskUp} from '../utils
 import {SortType, UpdateType, UserAction} from "../const";
 import {filter} from "../utils/filter";
 import NewTaskPresenter from "./task-new";
+import LoadingView from "../view/loading.js";
 
 const TASKS_PER_LOAD = 8;
 
 export default class BoardPresenter {
 
-  constructor(container, tasksModel, filterModel) {
+  constructor(container, tasksModel, filterModel, api) {
     this._container = container;
     this._tasksModel = tasksModel;
     this._filterModel = filterModel;
     this._loadedTaskCount = TASKS_PER_LOAD;
     this._currentSortType = SortType.DEFAULT;
     this._taskPresenter = {};
+    this._isLoading = true;
+    this._api = api;
 
     this._boardContainer = new Board();
     this._taskListComponent = new TaskList();
     this._noTaskComponent = new NoTask();
+    this._loadingComponent = new LoadingView();
+
 
     this._sortComponent = null;
     this._buttonComponent = null;
@@ -86,6 +91,11 @@ export default class BoardPresenter {
     render(this._boardContainer, this._noTaskComponent, RenderPosition.AFTERBEGIN);
   }
 
+  _renderLoading() {
+    render(this._boardContainer, this._loadingComponent, RenderPosition.AFTERBEGIN);
+  }
+
+
   _renderButton() {
 
     if (this._buttonComponent !== null) {
@@ -100,6 +110,10 @@ export default class BoardPresenter {
 
   _renderBoard() {
 
+    if (this._isLoading) {
+      this._renderLoading();
+      return;
+    }
     const tasks = this._getTasks();
     const taskCount = tasks.length;
 
@@ -144,7 +158,9 @@ export default class BoardPresenter {
   _handleUserAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.UPDATE_TASK:
-        this._tasksModel.updateTask(updateType, update);
+        this._api.updateTask(update).then((response) => {
+          this._tasksModel.updateTask(updateType, response);
+        });
         break;
       case UserAction.ADD_TASK:
         this._tasksModel.addTask(updateType, update);
@@ -171,6 +187,12 @@ export default class BoardPresenter {
         this._clearBoard({resetLoadedTaskCount: true, resetSortType: true});
         this._renderBoard();
         break;
+
+      case UpdateType.INIT:
+        this._isLoading = false;
+        remove(this._loadingComponent);
+        this._renderBoard();
+        break;
     }
   }
 
@@ -194,6 +216,7 @@ export default class BoardPresenter {
     remove(this._sortComponent);
     remove(this._noTaskComponent);
     remove(this._buttonComponent);
+    remove(this._loadingComponent);
 
     if (resetLoadedTaskCount) {
       this._loadedTaskCount = TASKS_PER_LOAD;
@@ -216,7 +239,6 @@ export default class BoardPresenter {
     render(this._boardContainer, this._taskListComponent, RenderPosition.BEFOREEND);
     this._tasksModel.addObserver(this._handleModelUpdate);
     this._filterModel.addObserver(this._handleModelUpdate);
-
     this._renderBoard();
   }
 }
