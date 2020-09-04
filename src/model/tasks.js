@@ -84,7 +84,7 @@ export default class Tasks extends Observer {
       {},
       task,
       {
-        "due_date": task.dueDate instanceof Date ? task.dueDate.toISOString() : null,
+        "due_date": task.dueDate instanceof Date ? new Date(Date.UTC(task.dueDate.getFullYear(), task.dueDate.getMonth(), task.dueDate.getDate())).toISOString() : null,
         "is_archived": task.isArchive,
         "is_favorite": task.isFavorite,
         "repeating_days": task.repeating
@@ -95,7 +95,6 @@ export default class Tasks extends Observer {
     delete adaptedTask.isArchive;
     delete adaptedTask.isFavorite;
     delete adaptedTask.repeating;
-
     return adaptedTask;
   }
 }

@@ -158,6 +158,7 @@ export default class BoardPresenter {
   _handleUserAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.UPDATE_TASK:
+        console.log(update.dueDate);
         this._api.updateTask(update).then((response) => {
           this._tasksModel.updateTask(updateType, response);
         });
