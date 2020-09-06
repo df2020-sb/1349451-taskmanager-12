@@ -44,7 +44,7 @@ export default class BoardPresenter {
 
 
   destroy() {
-    this._clearBoard({resetRenderedTaskCount: true, resetSortType: true});
+    this._clearBoard({resetLoadedTaskCount: true, resetSortType: true});
     remove(this._taskListComponent);
     remove(this._boardContainer);
     this._tasksModel.removeObserver(this._handleModelUpdate);
@@ -52,6 +52,7 @@ export default class BoardPresenter {
   }
 
   _getTasks() {
+
     const filterType = this._filterModel.getFilter();
     const tasks = this._tasksModel.getTasks();
     const filtredTasks = filter[filterType](tasks);
@@ -123,6 +124,7 @@ export default class BoardPresenter {
     }
 
     this._renderSort();
+    console.log(this._loadedTaskCount);
     this._renderTasks(tasks.slice(0, Math.min(taskCount, this._loadedTaskCount)));
 
     if (taskCount > this._loadedTaskCount) {
@@ -158,7 +160,6 @@ export default class BoardPresenter {
   _handleUserAction(actionType, updateType, update) {
     switch (actionType) {
       case UserAction.UPDATE_TASK:
-        console.log(update.dueDate);
         this._api.updateTask(update).then((response) => {
           this._tasksModel.updateTask(updateType, response);
         });
@@ -206,6 +207,7 @@ export default class BoardPresenter {
   }
 
   _clearBoard({resetLoadedTaskCount = false, resetSortType = false} = {}) {
+    console.log(resetLoadedTaskCount);
     const taskCount = this._getTasks().length;
     this._newTaskPresenter.destroy();
 
