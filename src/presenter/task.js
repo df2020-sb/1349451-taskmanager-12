@@ -11,6 +11,12 @@ const Mode = {
   EDITING: `EDITING`
 };
 
+export const State = {
+  SAVING: `SAVING`,
+  DELETING: `DELETING`,
+  ERROR: `ERROR`
+};
+
 export default class TaskPresenter {
   constructor(container, changeData, changeMode) {
     this._changeMode = changeMode;
@@ -53,6 +59,7 @@ export default class TaskPresenter {
 
     if (this._mode === Mode.EDITING) {
       replace(this._taskEditComponent, prevTaskEditComponent);
+      this._mode = Mode.DEFAULT;
     }
 
     remove(prevTaskComponent);
@@ -111,8 +118,6 @@ export default class TaskPresenter {
       isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
       update
     );
-
-    this._replaceFormToCard();
   }
 
 
@@ -122,7 +127,7 @@ export default class TaskPresenter {
       UpdateType.MINOR,
       task
     );
-    this._replaceFormToCard();
+    // this._replaceFormToCard();
   }
 
   destroyPicker() {
@@ -137,6 +142,34 @@ export default class TaskPresenter {
   resetView() {
     if (this._mode !== Mode.DEFAULT) {
       this._replaceFormToCard();
+    }
+  }
+
+  setState(state) {
+    const setStateToDefault = () => {
+      this._taskEditComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false
+      });
+    };
+    switch (state) {
+      case State.SAVING:
+        this._taskEditComponent.updateData({
+          isDisabled: true,
+          isSaving: true
+        });
+        break;
+      case State.DELETING:
+        this._taskEditComponent.updateData({
+          isDisabled: true,
+          isDeleting: true
+        });
+        break;
+      case State.ERROR:
+        this._taskComponent.shake(setStateToDefault);
+        this._taskEditComponent.shake(setStateToDefault);
+        break;
     }
   }
 }

@@ -42,3 +42,4 @@ export const MenuItem = {
   TASKS: `TASKS`,
   STATISTICS: `STATISTICS`
 };
+

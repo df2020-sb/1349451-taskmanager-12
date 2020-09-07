@@ -1,8 +1,7 @@
 /* eslint-disable indent */
-import TaskEditView from "../view/task-edit";
-import {generateId} from "../utils/render";
-import {remove, render, RenderPosition} from "../utils/render";
-import {UserAction, UpdateType} from "../const";
+import TaskEditView from '../view/task-edit';
+import {remove, render, RenderPosition} from '../utils/render';
+import {UserAction, UpdateType} from '../const';
 
 export default class NewTask {
   constructor(container, changeData) {
@@ -44,13 +43,31 @@ export default class NewTask {
     document.removeEventListener(`keydown`, this._escKeyDownHandler);
   }
 
+  setStateToSaving() {
+    this._taskEditComponent.updateData({
+      isDisabled: true,
+      isSaving: true
+    });
+  }
+
+  setStateToError() {
+    const setStateToDefault = () => {
+      this._taskEditComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false
+      });
+    };
+
+    this._taskEditComponent.shake(setStateToDefault);
+  }
+
+
   _handleFormSubmit(task) {
     this._changeData(
       UserAction.ADD_TASK,
       UpdateType.MINOR,
-      Object.assign({id: generateId()}, task)
-    );
-    this.destroy();
+      task);
   }
 
   _handleDeleteClick() {

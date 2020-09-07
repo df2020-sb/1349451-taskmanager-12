@@ -22,8 +22,6 @@ const compareNullDates = (dateA, dateB) => {
   return null;
 };
 
-export const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
-
 
 export const sortTaskUp = (taskA, taskB) => {
   let compareResult = compareNullDates(taskA.dueDate, taskB.dueDate);
