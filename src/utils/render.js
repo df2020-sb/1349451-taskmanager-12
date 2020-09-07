@@ -5,6 +5,7 @@ export const RenderPosition = {
   BEFOREEND: `beforeend`
 };
 
+
 const compareNullDates = (dateA, dateB) => {
   if (dateA === null && dateB === null) {
     return 0;
@@ -20,6 +21,8 @@ const compareNullDates = (dateA, dateB) => {
 
   return null;
 };
+
+export const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
 
 
 export const sortTaskUp = (taskA, taskB) => {

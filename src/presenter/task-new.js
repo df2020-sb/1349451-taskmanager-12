@@ -1,6 +1,6 @@
 /* eslint-disable indent */
 import TaskEditView from "../view/task-edit";
-import {generateId} from "../mock/task";
+import {generateId} from "../utils/render";
 import {remove, render, RenderPosition} from "../utils/render";
 import {UserAction, UpdateType} from "../const";
 

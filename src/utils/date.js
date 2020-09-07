@@ -19,7 +19,7 @@ export const isTaskExpiringToday = (dueDate) => {
     return false;
   }
   const currentDate = getCurrentDate();
-  return currentDate.getTime() === dueDate.getTime();
+  return currentDate.getDate() === dueDate.getDate();
 };
 
 export const isTaskRepeating = (repeating) => {

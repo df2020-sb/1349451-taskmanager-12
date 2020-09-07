@@ -1,40 +1,34 @@
 import TopMenu from './view/top-menu';
 import FilterPresenter from "./presenter/filter";
 import BoardPresenter from "./presenter/board";
-import {createTask} from './mock/task';
 import {RenderPosition, render, remove} from './utils/render';
 import TasksModel from "./model/tasks";
 import FilterModel from "./model/filter";
 import {MenuItem, UpdateType, FilterType} from "./const";
 import StatisticsView from "./view/statistics";
+import Api from "./api.js";
 
-const TASK_COUNT = 22;
+const AUTHORIZATION = `Basic hS2sd3dfSwcl1sa2j`;
+const END_POINT = `https://12.ecmascript.pages.academy/task-manager`;
+
+const main = document.querySelector(`.main`);
+const topContainer = main.querySelector(`.main__control`);
+
+const api = new Api(END_POINT, AUTHORIZATION);
+const tasksModel = new TasksModel();
+const filterModel = new FilterModel();
+const menu = new TopMenu();
+const boardPresenter = new BoardPresenter(main, tasksModel, filterModel, api);
+const filterPresenter = new FilterPresenter(main, filterModel, tasksModel);
 
 const handleNewTaskClose = () => {
   menu.getElement().querySelector(`[value=${MenuItem.TASKS}]`).disabled = false;
   menu.setMenuItem(MenuItem.TASKS);
 };
 
-const tasks = new Array(TASK_COUNT).fill().map(createTask);
-
-const tasksModel = new TasksModel();
-tasksModel.setTasks(tasks);
-
-const filterModel = new FilterModel();
-
-const main = document.querySelector(`.main`);
-const topContainer = main.querySelector(`.main__control`);
-
-
-const menu = new TopMenu();
-render(topContainer, menu, RenderPosition.BEFOREEND);
-
-const boardPresenter = new BoardPresenter(main, tasksModel, filterModel, handleNewTaskClose);
-const filterPresenter = new FilterPresenter(main, filterModel, tasksModel);
-filterPresenter.init();
-boardPresenter.init();
 
 let statisticsComponent = null;
+
 const handleMenuClick = (menuItem) => {
   switch (menuItem) {
 
@@ -60,6 +54,18 @@ const handleMenuClick = (menuItem) => {
   }
 };
 
-menu.setMenuClickHandler(handleMenuClick);
+filterPresenter.init();
+boardPresenter.init();
 
+api.getTasks()
+  .then((tasks) => {
+    tasksModel.setTasks(UpdateType.INIT, tasks);
+    render(topContainer, menu, RenderPosition.BEFOREEND);
+    menu.setMenuClickHandler(handleMenuClick);
+  })
+  .catch(() => {
+    tasksModel.setTasks(UpdateType.INIT, []);
+    render(topContainer, menu, RenderPosition.BEFOREEND);
+    menu.setMenuClickHandler(handleMenuClick);
+  });
 

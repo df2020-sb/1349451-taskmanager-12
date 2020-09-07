@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 import Observer from "../utils/observer";
 
 export default class Tasks extends Observer {
@@ -6,13 +7,17 @@ export default class Tasks extends Observer {
     this._tasks = [];
   }
 
-  setTasks(tasks) {
-    this._tasks = [...tasks];
-  }
-
   getTasks() {
     return this._tasks;
   }
+
+
+  setTasks(updateType, tasks) {
+    this._tasks = tasks.slice();
+
+    this._notify(updateType);
+  }
+
 
   updateTask(updateType, update) {
     const index = this._tasks.findIndex((task) => task.id === update.id);
@@ -52,5 +57,44 @@ export default class Tasks extends Observer {
     ];
 
     this._notify(updateType);
+  }
+
+  static adaptToClient(task) {
+    const adaptedTask = Object.assign(
+      {},
+      task,
+      {
+        dueDate: task.due_date !== null ? new Date(task.due_date) : task.due_date,
+        isArchive: task.is_archived,
+        isFavorite: task.is_favorite,
+        repeating: task.repeating_days
+      }
+    );
+
+    delete adaptedTask.due_date;
+    delete adaptedTask.is_archived;
+    delete adaptedTask.is_favorite;
+    delete adaptedTask.repeating_days;
+
+    return adaptedTask;
+  }
+
+  static adaptToServer(task) {
+    const adaptedTask = Object.assign(
+      {},
+      task,
+      {
+        "due_date": task.dueDate instanceof Date ? new Date(Date.UTC(task.dueDate.getFullYear(), task.dueDate.getMonth(), task.dueDate.getDate())).toISOString() : null,
+        "is_archived": task.isArchive,
+        "is_favorite": task.isFavorite,
+        "repeating_days": task.repeating
+      }
+    );
+
+    delete adaptedTask.dueDate;
+    delete adaptedTask.isArchive;
+    delete adaptedTask.isFavorite;
+    delete adaptedTask.repeating;
+    return adaptedTask;
   }
 }

@@ -26,7 +26,7 @@ export default class Filter {
     this._filterComponent = new FilterView(filters, this._currentFilter);
     this._filterComponent.setFilterTypeChangeHandler(this._handleFilterTypeChange);
 
-    if (prevFilterComponent === null) {
+    if (!prevFilterComponent) {
       render(this._filterContainer, this._filterComponent, RenderPosition.BEFOREEND);
       return;
     }
@@ -48,6 +48,7 @@ export default class Filter {
   }
 
   _getFilters() {
+
     const tasks = this._tasksModel.getTasks();
 
     return [
