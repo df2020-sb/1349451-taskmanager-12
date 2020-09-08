@@ -26,7 +26,7 @@ const compareNullDates = (dateA, dateB) => {
 export const sortTaskUp = (taskA, taskB) => {
   let compareResult = compareNullDates(taskA.dueDate, taskB.dueDate);
 
-  if (compareResult !== null) {
+  if (compareResult) {
     return compareResult;
   }
   return taskA.dueDate.getTime() - taskB.dueDate.getTime();
@@ -35,7 +35,7 @@ export const sortTaskUp = (taskA, taskB) => {
 export const sortTaskDown = (taskA, taskB) => {
   const compareResult = compareNullDates(taskA.dueDate, taskB.dueDate);
 
-  if (compareResult !== null) {
+  if (compareResult) {
     return compareResult;
   }
   return taskB.dueDate.getTime() - taskA.dueDate.getTime();

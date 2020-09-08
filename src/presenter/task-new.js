@@ -18,7 +18,7 @@ export default class NewTask {
 
   init(callback) {
     this._destroyCallback = callback;
-    if (this._taskCreateComponent !== null) {
+    if (this._taskCreateComponent) {
       return;
     }
 
@@ -34,7 +34,7 @@ export default class NewTask {
       return;
     }
 
-    if (this._destroyCallback !== null) {
+    if (this._destroyCallback) {
       this._destroyCallback();
     }
 
@@ -44,7 +44,7 @@ export default class NewTask {
   }
 
   setStateToSaving() {
-    this._taskEditComponent.updateData({
+    this._taskCreateComponent.updateData({
       isDisabled: true,
       isSaving: true
     });
@@ -52,14 +52,14 @@ export default class NewTask {
 
   setStateToError() {
     const setStateToDefault = () => {
-      this._taskEditComponent.updateData({
+      this._taskCreateComponent.updateData({
         isDisabled: false,
         isSaving: false,
         isDeleting: false
       });
     };
 
-    this._taskEditComponent.shake(setStateToDefault);
+    this._taskCreateComponent.shake(setStateToDefault);
   }
 
 

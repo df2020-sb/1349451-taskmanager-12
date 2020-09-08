@@ -59,12 +59,13 @@ export default class TaskPresenter {
 
     if (this._mode === Mode.EDITING) {
       replace(this._taskEditComponent, prevTaskEditComponent);
-      this._mode = Mode.DEFAULT;
+      this.resetView();
     }
 
     remove(prevTaskComponent);
     remove(prevTaskEditComponent);
   }
+
   _replaceCardToForm() {
     replace(this._taskEditComponent, this._taskComponent);
     document.addEventListener(`keydown`, this._escKeyDownHandler);
@@ -112,7 +113,6 @@ export default class TaskPresenter {
       !isDatesEqual(this._task.dueDate, update.dueDate) ||
       isTaskRepeating(this._task) !== isTaskRepeating(update);
 
-
     this._changeData(
       UserAction.UPDATE_TASK,
       isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
@@ -127,7 +127,6 @@ export default class TaskPresenter {
       UpdateType.MINOR,
       task
     );
-    // this._replaceFormToCard();
   }
 
   destroyPicker() {

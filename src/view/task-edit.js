@@ -35,7 +35,7 @@ const createDueDateTemplate = (dueDate, isDueDate, isDisabled) => {
           type="text"
           placeholder=""
           name="date"
-          value="${dueDate !== null ? formatDueDate(dueDate) : ``}"
+          value="${dueDate ? formatDueDate(dueDate) : ``}"
            ${isDisabled ? `disabled` : ``}
         />
       </label>

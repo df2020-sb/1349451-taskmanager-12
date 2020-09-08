@@ -67,7 +67,7 @@ export default class BoardPresenter {
   }
 
   _renderSort() {
-    if (this._sortComponent !== null) {
+    if (this._sortComponent) {
       this._sortComponent = null;
     }
 
@@ -99,7 +99,7 @@ export default class BoardPresenter {
 
   _renderButton() {
 
-    if (this._buttonComponent !== null) {
+    if (this._buttonComponent) {
       this._buttonComponent = null;
     }
 
@@ -160,6 +160,7 @@ export default class BoardPresenter {
 
     switch (actionType) {
       case UserAction.UPDATE_TASK:
+
         this._taskPresenter[update.id].setState(TaskState.SAVING);
         this._api.updateTask(update)
           .then((response) => {
