@@ -22,13 +22,11 @@ const compareNullDates = (dateA, dateB) => {
   return null;
 };
 
-export const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
-
 
 export const sortTaskUp = (taskA, taskB) => {
   let compareResult = compareNullDates(taskA.dueDate, taskB.dueDate);
 
-  if (compareResult !== null) {
+  if (compareResult) {
     return compareResult;
   }
   return taskA.dueDate.getTime() - taskB.dueDate.getTime();
@@ -37,7 +35,7 @@ export const sortTaskUp = (taskA, taskB) => {
 export const sortTaskDown = (taskA, taskB) => {
   const compareResult = compareNullDates(taskA.dueDate, taskB.dueDate);
 
-  if (compareResult !== null) {
+  if (compareResult) {
     return compareResult;
   }
   return taskB.dueDate.getTime() - taskA.dueDate.getTime();

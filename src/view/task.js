@@ -5,9 +5,7 @@ import he from "he";
 const createTaskTemplate = (task) => {
   const {color, description, dueDate, repeating, isArchive, isFavorite} = task;
 
-  const date = dueDate !== null
-    ? formatDueDate(dueDate)
-    : ``;
+  const date = dueDate ? formatDueDate(dueDate) : ``;
 
   const deadlineClassName = isTaskExpired(dueDate)
     ? `card--deadline`

@@ -2,7 +2,7 @@ import LoadMoreButton from '../view/button';
 import Board from '../view/board';
 import NoTask from '../view/no-task';
 import Sort from '../view/sort';
-import TaskPresenter from './task';
+import TaskPresenter, {State as TaskState} from './task';
 import TaskList from '../view/task-list';
 import {RenderPosition, render, remove, sortTaskDown, sortTaskUp} from '../utils/render';
 import {SortType, UpdateType, UserAction} from "../const";
@@ -67,7 +67,7 @@ export default class BoardPresenter {
   }
 
   _renderSort() {
-    if (this._sortComponent !== null) {
+    if (this._sortComponent) {
       this._sortComponent = null;
     }
 
@@ -99,7 +99,7 @@ export default class BoardPresenter {
 
   _renderButton() {
 
-    if (this._buttonComponent !== null) {
+    if (this._buttonComponent) {
       this._buttonComponent = null;
     }
 
@@ -124,7 +124,6 @@ export default class BoardPresenter {
     }
 
     this._renderSort();
-    console.log(this._loadedTaskCount);
     this._renderTasks(tasks.slice(0, Math.min(taskCount, this._loadedTaskCount)));
 
     if (taskCount > this._loadedTaskCount) {
@@ -158,17 +157,40 @@ export default class BoardPresenter {
   }
 
   _handleUserAction(actionType, updateType, update) {
+
     switch (actionType) {
       case UserAction.UPDATE_TASK:
-        this._api.updateTask(update).then((response) => {
-          this._tasksModel.updateTask(updateType, response);
-        });
+
+        this._taskPresenter[update.id].setState(TaskState.SAVING);
+        this._api.updateTask(update)
+          .then((response) => {
+            this._tasksModel.updateTask(updateType, response);
+          })
+          .catch(() => {
+            this._taskPresenter[update.id].setState(TaskState.ERROR);
+          });
         break;
+
       case UserAction.ADD_TASK:
-        this._tasksModel.addTask(updateType, update);
+        this._newTaskPresenter.setStateToSaving();
+        this._api.addTask(update)
+          .then((response) => {
+            this._tasksModel.addTask(updateType, response);
+          })
+          .catch(() => {
+            this._newTaskPresenter.setStateToError();
+          });
         break;
+
       case UserAction.DELETE_TASK:
-        this._tasksModel.deleteTask(updateType, update);
+        this._taskPresenter[update.id].setState(TaskState.DELETING);
+        this._api.deleteTask(update)
+          .then(() => {
+            this._tasksModel.deleteTask(updateType, update);
+          })
+          .catch(() => {
+            this._taskPresenter[update.id].setState(TaskState.ERROR);
+          });
         break;
     }
   }
@@ -207,7 +229,6 @@ export default class BoardPresenter {
   }
 
   _clearBoard({resetLoadedTaskCount = false, resetSortType = false} = {}) {
-    console.log(resetLoadedTaskCount);
     const taskCount = this._getTasks().length;
     this._newTaskPresenter.destroy();
 
