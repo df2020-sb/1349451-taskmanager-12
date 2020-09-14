@@ -1,5 +1,4 @@
-/* eslint-disable indent */
-import TasksModel from "./model/tasks.js";
+import TasksModel from '../model/tasks';
 
 const Method = {
   GET: `GET`,
@@ -63,12 +62,23 @@ export default class Api {
     headers.append(`Authorization`, this._authorization);
 
     return fetch(
-      `${this._endPoint}/${url}`,
-      {method, body, headers}
+        `${this._endPoint}/${url}`,
+        {method, body, headers}
     )
       .then(Api.checkStatus)
       .catch(Api.catchError);
   }
+
+  sync(data) {
+    return this._load({
+      url: `tasks/sync`,
+      method: Method.POST,
+      body: JSON.stringify(data),
+      headers: new Headers({"Content-Type": `application/json`})
+    })
+      .then(Api.toJSON);
+  }
+
 
   static checkStatus(response) {
     if (

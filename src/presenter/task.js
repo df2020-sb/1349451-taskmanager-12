@@ -1,9 +1,8 @@
-/* eslint-disable indent */
-import TaskView from "../view/task";
-import TaskEditView from "../view/task-edit";
-import {render, RenderPosition, replace, remove} from "../utils/render";
-import {isTaskRepeating, isDatesEqual} from "../utils/date";
-import {UserAction, UpdateType} from "../const";
+import TaskView from '../view/task';
+import TaskEditView from '../view/task-edit';
+import {render, RenderPosition, replace, remove} from '../utils/render';
+import {isTaskRepeating, isDatesEqual} from '../utils/date';
+import {UserAction, UpdateType} from '../const';
 
 
 const Mode = {
@@ -93,17 +92,17 @@ export default class TaskPresenter {
 
   _handleFavoriteClick() {
     this._changeData(
-      UserAction.UPDATE_TASK,
-      UpdateType.MINOR,
-      Object.assign({}, this._task, {isFavorite: !this._task.isFavorite})
+        UserAction.UPDATE_TASK,
+        UpdateType.MINOR,
+        Object.assign({}, this._task, {isFavorite: !this._task.isFavorite})
     );
   }
 
   _handleArchiveClick() {
     this._changeData(
-      UserAction.UPDATE_TASK,
-      UpdateType.MINOR,
-      Object.assign({}, this._task, {isArchive: !this._task.isArchive})
+        UserAction.UPDATE_TASK,
+        UpdateType.MINOR,
+        Object.assign({}, this._task, {isArchive: !this._task.isArchive})
     );
   }
 
@@ -114,18 +113,18 @@ export default class TaskPresenter {
       isTaskRepeating(this._task) !== isTaskRepeating(update);
 
     this._changeData(
-      UserAction.UPDATE_TASK,
-      isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
-      update
+        UserAction.UPDATE_TASK,
+        isMinorUpdate ? UpdateType.MINOR : UpdateType.PATCH,
+        update
     );
   }
 
 
   _handleDeleteClick(task) {
     this._changeData(
-      UserAction.DELETE_TASK,
-      UpdateType.MINOR,
-      task
+        UserAction.DELETE_TASK,
+        UpdateType.MINOR,
+        task
     );
   }
 

@@ -1,24 +1,32 @@
 import TopMenu from './view/top-menu';
-import FilterPresenter from "./presenter/filter";
+import FilterPresenter from './presenter/filter';
 import BoardPresenter from "./presenter/board";
 import {RenderPosition, render, remove} from './utils/render';
-import TasksModel from "./model/tasks";
-import FilterModel from "./model/filter";
-import {MenuItem, UpdateType, FilterType} from "./const";
+import TasksModel from './model/tasks';
+import FilterModel from './model/filter';
+import {MenuItem, UpdateType, FilterType} from './const';
 import StatisticsView from "./view/statistics";
-import Api from "./api.js";
+import Api from '../src/api/index';
+import Store from "./api/store.js";
+import Provider from './api/provider';
 
 const AUTHORIZATION = `Basic hS2sd3dfSwcl1sa2j`;
 const END_POINT = `https://12.ecmascript.pages.academy/task-manager`;
+const STORE_PREFIX = `taskmanager-localstorage`;
+const STORE_VER = `v12`;
+const STORE_NAME = `${STORE_PREFIX}-${STORE_VER}`;
 
 const main = document.querySelector(`.main`);
 const topContainer = main.querySelector(`.main__control`);
 
 const api = new Api(END_POINT, AUTHORIZATION);
+const store = new Store(STORE_NAME, window.localStorage);
+const apiWithProvider = new Provider(api, store);
+
 const tasksModel = new TasksModel();
 const filterModel = new FilterModel();
 const menu = new TopMenu();
-const boardPresenter = new BoardPresenter(main, tasksModel, filterModel, api);
+const boardPresenter = new BoardPresenter(main, tasksModel, filterModel, apiWithProvider);
 const filterPresenter = new FilterPresenter(main, filterModel, tasksModel);
 
 const handleNewTaskClose = () => {
@@ -57,7 +65,7 @@ const handleMenuClick = (menuItem) => {
 filterPresenter.init();
 boardPresenter.init();
 
-api.getTasks()
+apiWithProvider.getTasks()
   .then((tasks) => {
     tasksModel.setTasks(UpdateType.INIT, tasks);
     render(topContainer, menu, RenderPosition.BEFOREEND);
@@ -69,3 +77,16 @@ api.getTasks()
     menu.setMenuClickHandler(handleMenuClick);
   });
 
+
+window.addEventListener(`load`, () => {
+  navigator.serviceWorker.register(`/sw.js`);
+});
+
+window.addEventListener(`online`, () => {
+  document.title = document.title.replace(` [offline]`, ``);
+  apiWithProvider.sync();
+});
+
+window.addEventListener(`offline`, () => {
+  document.title += ` [offline]`;
+});

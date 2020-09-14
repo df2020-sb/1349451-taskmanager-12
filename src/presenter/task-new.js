@@ -1,4 +1,3 @@
-/* eslint-disable indent */
 import TaskEditView from '../view/task-edit';
 import {remove, render, RenderPosition} from '../utils/render';
 import {UserAction, UpdateType} from '../const';
@@ -65,9 +64,9 @@ export default class NewTask {
 
   _handleFormSubmit(task) {
     this._changeData(
-      UserAction.ADD_TASK,
-      UpdateType.MINOR,
-      task);
+        UserAction.ADD_TASK,
+        UpdateType.MINOR,
+        task);
   }
 
   _handleDeleteClick() {

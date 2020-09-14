@@ -5,10 +5,10 @@ import Sort from '../view/sort';
 import TaskPresenter, {State as TaskState} from './task';
 import TaskList from '../view/task-list';
 import {RenderPosition, render, remove, sortTaskDown, sortTaskUp} from '../utils/render';
-import {SortType, UpdateType, UserAction} from "../const";
-import {filter} from "../utils/filter";
-import NewTaskPresenter from "./task-new";
-import LoadingView from "../view/loading.js";
+import {SortType, UpdateType, UserAction} from '../const';
+import {filter} from '../utils/filter';
+import NewTaskPresenter from './task-new';
+import LoadingView from '../view/loading';
 
 const TASKS_PER_LOAD = 8;
 

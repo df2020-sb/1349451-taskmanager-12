@@ -1,8 +1,8 @@
 /* eslint-disable indent */
-import moment from "moment";
-import {isDatesEqual} from "./date";
+import moment from 'moment';
+import {isDatesEqual} from './date';
 
-import {Color} from "../const.js";
+import {Color} from '../const.js';
 
 export const colorToHex = {
   [Color.BLACK]: `#000000`,

@@ -1,4 +1,4 @@
-import moment from "moment";
+import moment from 'moment';
 
 export const getCurrentDate = () => {
   const currentDate = new Date();

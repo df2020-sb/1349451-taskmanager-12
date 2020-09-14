@@ -1,10 +1,10 @@
 /* eslint-disable indent */
 import {COLORS} from '../const.js';
 import {isTaskRepeating, formatDueDate} from '../utils/date';
-import SmartView from "./smart.js";
-import flatpickr from "flatpickr";
-import "../../node_modules/flatpickr/dist/flatpickr.min.css";
-import he from "he";
+import SmartView from './smart';
+import flatpickr from 'flatpickr';
+import '../../node_modules/flatpickr/dist/flatpickr.min.css';
+import he from 'he';
 
 const EMPTY_TASK = {
   color: COLORS[0],

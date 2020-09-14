@@ -1,5 +1,5 @@
-import {FilterType} from "../const";
-import {isTaskExpired, isTaskExpiringToday, isTaskRepeating} from "./date";
+import {FilterType} from '../const';
+import {isTaskExpired, isTaskExpiringToday, isTaskRepeating} from './date';
 
 export const filter = {
   [FilterType.ALL]: (tasks) => tasks.filter((task) => !task.isArchive),

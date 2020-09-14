@@ -1,8 +1,8 @@
 /* eslint-disable indent */
-import flatpickr from "flatpickr";
-import SmartView from "./smart.js";
-import {getCurrentDate} from "../utils/date";
-import Chart from "chart.js";
+import flatpickr from 'flatpickr';
+import SmartView from './smart';
+import {getCurrentDate} from '../utils/date';
+import Chart from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import {
   countCompletedTaskInDateRange,
@@ -12,7 +12,7 @@ import {
   countTasksInDateRange,
   parseChartDate,
   getDatesInRange
-} from "../utils/statistics";
+} from '../utils/statistics';
 
 const renderColorsChart = (colorsCtx, tasks) => {
 
