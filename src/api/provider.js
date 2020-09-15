@@ -21,7 +21,7 @@ export default class Provider {
   }
 
   getTasks() {
-    if (Provider.isOnline()) {
+    if (this._isOnline()) {
       return this._api.getTasks()
         .then((tasks) => {
           const items = createStoreStructure(tasks.map(TasksModel.adaptToServer));
@@ -36,7 +36,7 @@ export default class Provider {
   }
 
   updateTask(task) {
-    if (Provider.isOnline()) {
+    if (this._isOnline()) {
       return this._api.updateTask(task)
         .then((updatedTask) => {
           this._store.setItem(updatedTask.id, TasksModel.adaptToServer(updatedTask));
@@ -50,7 +50,7 @@ export default class Provider {
   }
 
   addTask(task) {
-    if (Provider.isOnline()) {
+    if (this._isOnline()) {
       return this._api.addTask(task)
         .then((newTask) => {
           this._store.setItem(newTask.id, TasksModel.adaptToServer(newTask));
@@ -67,7 +67,7 @@ export default class Provider {
   }
 
   deleteTask(task) {
-    if (Provider.isOnline()) {
+    if (this._isOnline()) {
       return this._api.deleteTask(task)
         .then(() => this._store.removeItem(task.id));
     }
@@ -78,7 +78,7 @@ export default class Provider {
   }
 
   sync() {
-    if (Provider.isOnline()) {
+    if (this._isOnline()) {
       const storeTasks = Object.values(this._store.getItems());
 
       return this._api.sync(storeTasks)
@@ -95,7 +95,7 @@ export default class Provider {
     return Promise.reject(new Error(`Sync data failed`));
   }
 
-  static isOnline() {
+  _isOnline() {
     return window.navigator.onLine;
   }
 }
